@@ -8,12 +8,14 @@ import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
 import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +60,7 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	public SqlSessionFactory sqlSessionFactory() throws Exception {
+	public SqlSessionFactory sqlSessionFactory(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy) throws Exception {
 		    
 		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
 		Interceptor rwplugin = new RWPlugin();
@@ -88,20 +90,21 @@ public class MybatisAutoConfiguration {
 		}
 		
 		factory.setTransactionFactory(new RWManagedTransactionFactory());
-		factory.setDataSource(this.roundRobinDataSouceProxy());
+		factory.setDataSource(roundRobinDataSouceProxy);
 		return factory.getObject();
 	}
 
 	@Bean
 	@Primary
-	public RoundRobinRWRoutingDataSourceProxy roundRobinDataSouceProxy() {
+	@ConditionalOnMissingBean
+	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy() {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
 		return proxy;
 	}
 
 	@Bean
-	public DataSourceTransactionManager transactionManager() {
-		return new DataSourceTransactionManager(roundRobinDataSouceProxy());
+	public DataSourceTransactionManager transactionManager(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy) {
+		return new DataSourceTransactionManager(roundRobinDataSouceProxy);
 	}
 	
 
