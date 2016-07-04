@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @SpringBootApplication
-@Import(value={DataBaseConfiguration.class})
+@Import(value={DataConfiguration.class})
 @MapperScan("org.spring.boot.mybatis.rw.sample.mapper")
 public class App 
 {
@@ -23,7 +23,7 @@ public class App
 	private StrudentsService strudentsService;
 	
 	
-	@RequestMapping("/")
+	@RequestMapping("/hello")
 	String home() {
 		strudentsService.rw(); 
 		return "Hello World!";
