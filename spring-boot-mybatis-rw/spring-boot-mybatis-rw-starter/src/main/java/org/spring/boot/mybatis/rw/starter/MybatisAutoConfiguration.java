@@ -1,5 +1,6 @@
 package org.spring.boot.mybatis.rw.starter;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -7,19 +8,20 @@ import javax.annotation.PostConstruct;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
 import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -36,7 +38,6 @@ import org.springframework.util.StringUtils;
 @Configuration()
 @ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 @EnableConfigurationProperties(MybatisProperties.class)
-@ConditionalOnBean(name={"writeDataSource","readDataSources"}) 
 public class MybatisAutoConfiguration {
 
 	@Autowired
@@ -95,10 +96,12 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	@Primary
 	@ConditionalOnMissingBean
-	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy() {
+	@ConditionalOnBean(name={"writeDataSource","readDataSources"}) 
+	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")DataSource writeDataSource) {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
+		proxy.setReadDataSoures((List<Object>)(readDataSoures));
+		proxy.setWriteDataSource(writeDataSource);
 		return proxy;
 	}
 

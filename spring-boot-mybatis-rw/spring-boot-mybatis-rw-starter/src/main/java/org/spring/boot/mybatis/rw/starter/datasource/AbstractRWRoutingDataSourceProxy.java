@@ -13,10 +13,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.jdbc.datasource.AbstractDataSource;
 import org.springframework.jdbc.datasource.ConnectionProxy;
@@ -29,13 +26,8 @@ import org.springframework.util.Assert;
  *
  *借鉴 LazyConnectionDataSourceProxy，AbstractRoutingDataSource
  */
-public abstract class AbstractRWRoutingDataSourceProxy extends AbstractDataSource implements ApplicationContextAware, InitializingBean {
+public abstract class AbstractRWRoutingDataSourceProxy extends AbstractDataSource implements InitializingBean {
 
-	@Override
-	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-		this.applicationContext = applicationContext;
-	}
-	private ApplicationContext applicationContext;
 	public static final String READ = "read";
 	public static final String WRITE = "write";
 
@@ -83,11 +75,7 @@ public abstract class AbstractRWRoutingDataSourceProxy extends AbstractDataSourc
 		return resolvedWriteDataSource;
 	}
 
-	@SuppressWarnings("unchecked")
-	public void afterPropertiesSet() throws Exception {
-		this.writeDataSource = this.applicationContext.getBean("writeDataSource");
-		this.readDataSoures = this.applicationContext.getBean("readDataSources", List.class);
-		
+	public void afterPropertiesSet() throws Exception {	
 		if (writeDataSource == null) {
 			throw new IllegalArgumentException("Property 'writeDataSource' is required");
 		}
