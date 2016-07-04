@@ -63,7 +63,11 @@ public class RWPlugin implements Interceptor {
 	}
 
 	public Object plugin(Object target) {
-		return Plugin.wrap(target, this);
+		if (target instanceof StatementHandler) {  
+            return Plugin.wrap(target, this);  
+        } else {  
+            return target;  
+        }  
 	}
 
 	public void setProperties(Properties properties) {
