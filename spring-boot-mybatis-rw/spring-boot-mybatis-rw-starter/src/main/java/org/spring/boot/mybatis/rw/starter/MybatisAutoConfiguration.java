@@ -1,7 +1,7 @@
 package org.spring.boot.mybatis.rw.starter;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -27,7 +27,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -44,7 +43,7 @@ public class MybatisAutoConfiguration {
 	private MybatisProperties properties;
 
 	@Autowired(required = false)
-	private Set<Interceptor> interceptors;
+	private Interceptor[] interceptors;
 	@Autowired
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
 
@@ -69,13 +68,14 @@ public class MybatisAutoConfiguration {
 			factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
 		}
 		factory.setConfiguration(properties.getConfiguration());
-		if (CollectionUtils.isEmpty(this.interceptors)) {
+		
+		if (ObjectUtils.isEmpty(this.interceptors)) {
 			Interceptor[] plugins = { rwplugin };
 			factory.setPlugins(plugins);
 		} else {
-			this.interceptors.add(rwplugin);
-			Interceptor[] plugins = new Interceptor[0];
-			factory.setPlugins(this.interceptors.toArray(plugins));
+			List<Interceptor> interceptorList = Arrays.asList(interceptors);
+			interceptorList.add(rwplugin);
+			factory.setPlugins((Interceptor[])interceptorList.toArray());
 		}
 		if (this.databaseIdProvider != null) {
 			factory.setDatabaseIdProvider(this.databaseIdProvider);
@@ -95,6 +95,7 @@ public class MybatisAutoConfiguration {
 		return factory.getObject();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(name={"writeDataSource","readDataSources"}) 
