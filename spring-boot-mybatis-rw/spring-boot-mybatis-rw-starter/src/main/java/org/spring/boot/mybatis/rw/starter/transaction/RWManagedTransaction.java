@@ -8,9 +8,6 @@ import javax.sql.DataSource;
 
 import org.mybatis.spring.transaction.SpringManagedTransaction;
 import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
-import org.springframework.jdbc.datasource.ConnectionHolder;
-import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
  * 
@@ -19,10 +16,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  */
 public class RWManagedTransaction extends SpringManagedTransaction {
 
-	private final DataSource dataSource;
 	public RWManagedTransaction(DataSource dataSource) {
 		super(dataSource);
-		this.dataSource  = dataSource;
 	}
 
 	/**
