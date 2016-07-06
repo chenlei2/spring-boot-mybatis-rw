@@ -13,8 +13,11 @@ import org.apache.ibatis.plugin.Intercepts;
 import org.apache.ibatis.plugin.Invocation;
 import org.apache.ibatis.plugin.Plugin;
 import org.apache.ibatis.plugin.Signature;
+import org.apache.ibatis.reflection.DefaultReflectorFactory;
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
+import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
 import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
-import org.spring.boot.mybatis.rw.starter.util.ReflectionUtils;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
@@ -29,16 +32,14 @@ public class RWPlugin implements Interceptor {
 	public Object intercept(Invocation invocation) throws Throwable {
 
 		Connection conn = (Connection) invocation.getArgs()[0];
-		if (conn instanceof ConnectionProxy) {
+		if (conn instanceof ConnectionProxy) {		
 			StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
-
+			MetaObject metaObject = MetaObject.forObject(statementHandler, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(), new DefaultReflectorFactory());
 			MappedStatement mappedStatement = null;
 			if (statementHandler instanceof RoutingStatementHandler) {
-				StatementHandler delegate = (StatementHandler) ReflectionUtils.getFieldValue(statementHandler,
-						"delegate");
-				mappedStatement = (MappedStatement) ReflectionUtils.getFieldValue(delegate, "mappedStatement");
+				mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
 			} else {
-				mappedStatement = (MappedStatement) ReflectionUtils.getFieldValue(statementHandler, "mappedStatement");
+				mappedStatement = (MappedStatement) metaObject.getValue("mappedStatement");
 			}
 			String key = AbstractRWRoutingDataSourceProxy.WRITE;
 
