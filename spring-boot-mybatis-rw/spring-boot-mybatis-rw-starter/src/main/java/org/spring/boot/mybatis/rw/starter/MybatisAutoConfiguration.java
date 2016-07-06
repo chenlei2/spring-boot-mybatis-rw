@@ -7,9 +7,11 @@ import javax.annotation.PostConstruct;
 
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
@@ -60,22 +62,23 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	public SqlSessionFactory sqlSessionFactory(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy) throws Exception {
-		    
+	public SqlSessionFactory sqlSessionFactory(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy)
+			throws Exception {
+
 		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
 		Interceptor rwplugin = new RWPlugin();
 		if (StringUtils.hasText(this.properties.getConfigLocation())) {
 			factory.setConfigLocation(this.resourceLoader.getResource(this.properties.getConfigLocation()));
 		}
 		factory.setConfiguration(properties.getConfiguration());
-		
+
 		if (ObjectUtils.isEmpty(this.interceptors)) {
 			Interceptor[] plugins = { rwplugin };
 			factory.setPlugins(plugins);
 		} else {
 			List<Interceptor> interceptorList = Arrays.asList(interceptors);
 			interceptorList.add(rwplugin);
-			factory.setPlugins((Interceptor[])interceptorList.toArray());
+			factory.setPlugins((Interceptor[]) interceptorList.toArray());
 		}
 		if (this.databaseIdProvider != null) {
 			factory.setDatabaseIdProvider(this.databaseIdProvider);
@@ -89,7 +92,7 @@ public class MybatisAutoConfiguration {
 		if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) {
 			factory.setMapperLocations(this.properties.resolveMapperLocations());
 		}
-		
+
 		factory.setTransactionFactory(new RWManagedTransactionFactory());
 		factory.setDataSource(roundRobinDataSouceProxy);
 		return factory.getObject();
@@ -98,10 +101,12 @@ public class MybatisAutoConfiguration {
 	@SuppressWarnings("unchecked")
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(name={"writeDataSource","readDataSources"}) 
-	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")DataSource writeDataSource) {
+	@ConditionalOnBean(name = { "writeDataSource", "readDataSources" })
+	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(
+			@Qualifier("readDataSources") Object readDataSoures,
+			@Qualifier("writeDataSource") DataSource writeDataSource) {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
-		proxy.setReadDataSoures((List<Object>)(readDataSoures));
+		proxy.setReadDataSoures((List<Object>) (readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
 		return proxy;
 	}
@@ -110,17 +115,16 @@ public class MybatisAutoConfiguration {
 	public DataSourceTransactionManager transactionManager(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy) {
 		return new DataSourceTransactionManager(roundRobinDataSouceProxy);
 	}
-	
 
-
-	/*
-	 * @Bean
-	 * 
-	 * @ConditionalOnMissingBean public SqlSessionTemplate
-	 * sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) { ExecutorType
-	 * executorType = this.properties.getExecutorType(); if (executorType !=
-	 * null) { return new SqlSessionTemplate(sqlSessionFactory, executorType); }
-	 * else { return new SqlSessionTemplate(sqlSessionFactory); } }
-	 */
+	@Bean
+	@ConditionalOnMissingBean
+	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
+		ExecutorType executorType = this.properties.getExecutorType();
+		if (executorType != null) {
+			return new SqlSessionTemplate(sqlSessionFactory, executorType);
+		} else {
+			return new SqlSessionTemplate(sqlSessionFactory);
+		}
+	}
 
 }
