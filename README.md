@@ -6,14 +6,14 @@
 介绍
 ---
 此插件由以下3部分组成
-- datasource：读写数据源的代理，支持一写多读，用户只需实现''' org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy'''这个类，实现自己读数据源的负载均衡算法
+- datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy这个类，实现自己读数据源的负载均衡算法
 - transaction：读写数据源的事务处理
 - pulgin：mybatis插件实现读写路由
 
 配置
 ---
 - datasource：
-'''  
+`  
 <!--简单的一个master和多个slaver 读写分离的数据源 -->
 	<bean id="dataSource" 
 	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy">
@@ -26,9 +26,9 @@
 	        </list>
 	    </property>
 	</bean>
-'''
+` 
 - transaction：
-'''  
+`  
 <!--自定义事务工厂  -->
 	<bean id="transactionFactory" class="org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory"/>
 	<!-- mybatis配置 -->
@@ -44,7 +44,7 @@
 			</list>
 		</property> 
 	</bean>
-'''
+` 
 
 总结
 ---
