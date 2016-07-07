@@ -36,7 +36,12 @@ public class RWPlugin implements Interceptor {
 
 		Connection conn = (Connection) invocation.getArgs()[0];
 		conn = unwrapConnection(conn);
-		if (conn instanceof ConnectionProxy) {		
+		if (conn instanceof ConnectionProxy) {			
+			//强制走写库
+			if(AbstractRWRoutingDataSourceProxy.FORCE_WRITE.get() != null && AbstractRWRoutingDataSourceProxy.FORCE_WRITE.get()){
+				routeConnection(AbstractRWRoutingDataSourceProxy.WRITE, conn);
+				return invocation.proceed();
+			}	
 			StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
 			MetaObject metaObject = MetaObject.forObject(statementHandler, new DefaultObjectFactory(), new DefaultObjectWrapperFactory(), new DefaultReflectorFactory());
 			MappedStatement mappedStatement = null;
@@ -49,22 +54,24 @@ public class RWPlugin implements Interceptor {
 
 			if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT) {
 				key = AbstractRWRoutingDataSourceProxy.READ;
-			} else {
-				key = AbstractRWRoutingDataSourceProxy.WRITE;
-			}
-			AbstractRWRoutingDataSourceProxy.currentDataSource.set(key);
-			
-			if(AbstractRWRoutingDataSourceProxy.ConnectionContext.get() == null){
-				AbstractRWRoutingDataSourceProxy.ConnectionContext.set(new HashMap<String, Connection>());
-			}
-			if (!AbstractRWRoutingDataSourceProxy.ConnectionContext.get().containsKey(key)) {
-				ConnectionProxy conToUse = (ConnectionProxy) conn;
-				conToUse.getTargetConnection();
-			}
+			} 
+			routeConnection(key, conn);
 		}
 
 		return invocation.proceed();
 
+	}
+	
+	private void routeConnection(String key, Connection conn) {
+		AbstractRWRoutingDataSourceProxy.currentDataSource.set(key);
+		
+		if(AbstractRWRoutingDataSourceProxy.ConnectionContext.get() == null){
+			AbstractRWRoutingDataSourceProxy.ConnectionContext.set(new HashMap<String, Connection>());
+		}
+		if (!AbstractRWRoutingDataSourceProxy.ConnectionContext.get().containsKey(key)) {
+			ConnectionProxy conToUse = (ConnectionProxy) conn;
+			conToUse.getTargetConnection();
+		}
 	}
 
 	public Object plugin(Object target) {

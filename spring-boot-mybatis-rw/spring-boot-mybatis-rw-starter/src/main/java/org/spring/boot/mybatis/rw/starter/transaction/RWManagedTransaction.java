@@ -63,5 +63,6 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 		}	
 		AbstractRWRoutingDataSourceProxy.ConnectionContext.remove();
 		AbstractRWRoutingDataSourceProxy.currentDataSource.set(AbstractRWRoutingDataSourceProxy.WRITE);
+		AbstractRWRoutingDataSourceProxy.FORCE_WRITE.set(false);
 	}
 }

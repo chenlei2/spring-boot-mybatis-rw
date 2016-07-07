@@ -34,7 +34,9 @@ public abstract class AbstractRWRoutingDataSourceProxy extends AbstractDataSourc
 	public final static ThreadLocal<String> currentDataSource = new NamedThreadLocal<String>("routingdatasource's key");
 	public final static ThreadLocal<Map<String, Connection>> ConnectionContext = new NamedThreadLocal<Map<String, Connection>>(
 			"connection map");
-
+	
+	public final static ThreadLocal<Boolean>  FORCE_WRITE = new NamedThreadLocal<Boolean>("FORCE_WRITE");
+	
 
 	// 配置文件中配置的read-only datasoure
 	// 可以为真实的datasource，也可以jndi的那种
