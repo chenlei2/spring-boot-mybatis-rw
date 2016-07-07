@@ -13,7 +13,7 @@
 配置
 ---
 - datasource：
-`  
+```
 <!--简单的一个master和多个slaver 读写分离的数据源 -->
 	<bean id="dataSource" 
 	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy">
@@ -26,9 +26,9 @@
 	        </list>
 	    </property>
 	</bean>
-` 
+``` 
 - transaction：
-`  
+``` 
 <!--自定义事务工厂  -->
 	<bean id="transactionFactory" class="org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory"/>
 	<!-- mybatis配置 -->
@@ -44,7 +44,7 @@
 			</list>
 		</property> 
 	</bean>
-` 
+``` 
 
 总结
 ---
