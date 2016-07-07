@@ -8,6 +8,7 @@
   <modules>
     <module>spring-boot-mybatis-rw-starter</module>
     <module>spring-boot-mybatis-rw-sample</module>
+    <module>mybatis-rw-sample-xml</module>
   </modules>
    <properties>
     <mybatis.version>3.4.1</mybatis.version>
