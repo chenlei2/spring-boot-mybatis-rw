@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
-import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,11 +46,11 @@ public class DataConfiguration {
     } 
     
 	//@Bean 实现自己的读库负责均衡
-	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")Object writeDataSource) {
+	/*public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")Object writeDataSource) {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
 		proxy.setReadDataSoures((List<Object>)(readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
 		return proxy;
-	}
+	}*/
    
 }

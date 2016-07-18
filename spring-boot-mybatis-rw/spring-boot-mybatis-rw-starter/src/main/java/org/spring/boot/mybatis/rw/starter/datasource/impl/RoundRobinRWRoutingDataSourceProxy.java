@@ -4,14 +4,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource;
 /**
  * 
  * @author chenlei
  * 简单实现读数据源负载均衡
  *
  */
-public class RoundRobinRWRoutingDataSourceProxy extends AbstractRWRoutingDataSourceProxy {
+public class RoundRobinRWRoutingDataSourceProxy extends AbstractReadRoutingDataSource {
 
 	private AtomicInteger count = new AtomicInteger(0);
 

@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
 import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
@@ -62,7 +62,7 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	public SqlSessionFactory sqlSessionFactory(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy)
+	public SqlSessionFactory sqlSessionFactory(AbstractReadRoutingDataSource roundRobinDataSouceProxy)
 			throws Exception {
 
 		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
@@ -102,9 +102,9 @@ public class MybatisAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(name = { "writeDataSource", "readDataSources" })
-	public AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy(
+	public AbstractReadRoutingDataSource roundRobinDataSouceProxy(
 			@Qualifier("readDataSources") Object readDataSoures,
-			@Qualifier("writeDataSource") DataSource writeDataSource) {
+			@Qualifier("writeDataSource") Object writeDataSource) {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
 		proxy.setReadDataSoures((List<Object>) (readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
@@ -112,12 +112,11 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	public DataSourceTransactionManager transactionManager(AbstractRWRoutingDataSourceProxy roundRobinDataSouceProxy) {
+	public DataSourceTransactionManager transactionManager(AbstractReadRoutingDataSource roundRobinDataSouceProxy) {
 		return new DataSourceTransactionManager(roundRobinDataSouceProxy);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory sqlSessionFactory) {
 		ExecutorType executorType = this.properties.getExecutorType();
 		if (executorType != null) {

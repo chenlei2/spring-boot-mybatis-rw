@@ -20,7 +20,7 @@ import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.factory.DefaultObjectFactory;
 import org.apache.ibatis.reflection.wrapper.DefaultObjectWrapperFactory;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.LazyConnectionDataSourceProxy;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
@@ -38,8 +38,8 @@ public class RWPlugin implements Interceptor {
 		conn = unwrapConnection(conn);
 		if (conn instanceof ConnectionProxy) {			
 			//强制走写库
-			if(AbstractRWRoutingDataSourceProxy.FORCE_WRITE.get() != null && AbstractRWRoutingDataSourceProxy.FORCE_WRITE.get()){
-				routeConnection(AbstractRWRoutingDataSourceProxy.WRITE, conn);
+			if(LazyConnectionDataSourceProxy.FORCE_WRITE.get() != null && LazyConnectionDataSourceProxy.FORCE_WRITE.get()){
+				routeConnection(LazyConnectionDataSourceProxy.WRITE, conn);
 				return invocation.proceed();
 			}	
 			StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
@@ -50,10 +50,10 @@ public class RWPlugin implements Interceptor {
 			} else {
 				mappedStatement = (MappedStatement) metaObject.getValue("mappedStatement");
 			}
-			String key = AbstractRWRoutingDataSourceProxy.WRITE;
+			String key = LazyConnectionDataSourceProxy.WRITE;
 
 			if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT) {
-				key = AbstractRWRoutingDataSourceProxy.READ;
+				key = LazyConnectionDataSourceProxy.READ;
 			} 
 			routeConnection(key, conn);
 		}
@@ -63,12 +63,12 @@ public class RWPlugin implements Interceptor {
 	}
 	
 	private void routeConnection(String key, Connection conn) {
-		AbstractRWRoutingDataSourceProxy.currentDataSource.set(key);
+		LazyConnectionDataSourceProxy.currentDataSource.set(key);
 		
-		if(AbstractRWRoutingDataSourceProxy.ConnectionContext.get() == null){
-			AbstractRWRoutingDataSourceProxy.ConnectionContext.set(new HashMap<String, Connection>());
+		if(LazyConnectionDataSourceProxy.ConnectionContext.get() == null){
+			LazyConnectionDataSourceProxy.ConnectionContext.set(new HashMap<String, Connection>());
 		}
-		if (!AbstractRWRoutingDataSourceProxy.ConnectionContext.get().containsKey(key)) {
+		if (!LazyConnectionDataSourceProxy.ConnectionContext.get().containsKey(key)) {
 			ConnectionProxy conToUse = (ConnectionProxy) conn;
 			conToUse.getTargetConnection();
 		}

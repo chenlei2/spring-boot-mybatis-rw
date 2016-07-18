@@ -4,7 +4,6 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.spring.boot.mybatis.rw.sample.mapper.Students;
 import org.spring.boot.mybatis.rw.sample.mapper.StudentsMapper;
 import org.spring.boot.mybatis.rw.sample.service.StrudentsService;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +15,7 @@ public class StrudentsServiceImpl implements StrudentsService {
 	private SqlSessionTemplate sqlSessionTemplate;
 	@Transactional
 	public void rw() {
-		AbstractRWRoutingDataSourceProxy.FORCE_WRITE.set(true);
+
 		Students students = (Students)sqlSessionTemplate.selectOne("selectByPrimaryKey", 1L);
 		System.out.println(students.getName());
 		students.setName("rw");

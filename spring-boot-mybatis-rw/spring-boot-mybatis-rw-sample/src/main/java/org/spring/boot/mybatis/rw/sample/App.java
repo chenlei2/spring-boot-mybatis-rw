@@ -1,5 +1,7 @@
 package org.spring.boot.mybatis.rw.sample;
 
+import javax.validation.constraints.NotNull;
+
 import org.mybatis.spring.annotation.MapperScan;
 import org.spring.boot.mybatis.rw.sample.service.StrudentsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class App 
 {
 	@Autowired
+	@NotNull
 	private StrudentsService strudentsService;
 	
 	

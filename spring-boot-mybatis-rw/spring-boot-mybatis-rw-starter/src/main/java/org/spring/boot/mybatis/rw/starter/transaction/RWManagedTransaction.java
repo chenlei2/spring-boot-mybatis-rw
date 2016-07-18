@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.mybatis.spring.transaction.SpringManagedTransaction;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.LazyConnectionDataSourceProxy;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void commit() throws SQLException {
 		super.commit();
-		Map<String, Connection> connectionMap = AbstractRWRoutingDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -40,7 +40,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void rollback() throws SQLException {
 		super.rollback();
-		Map<String, Connection> connectionMap = AbstractRWRoutingDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -55,14 +55,14 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void close() throws SQLException {
 		super.close();
-		Map<String, Connection> connectionMap = AbstractRWRoutingDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				c.close();
 			}
 		}	
-		AbstractRWRoutingDataSourceProxy.ConnectionContext.remove();
-		AbstractRWRoutingDataSourceProxy.currentDataSource.set(AbstractRWRoutingDataSourceProxy.WRITE);
-		AbstractRWRoutingDataSourceProxy.FORCE_WRITE.set(false);
+		LazyConnectionDataSourceProxy.ConnectionContext.remove();
+		LazyConnectionDataSourceProxy.currentDataSource.set(LazyConnectionDataSourceProxy.WRITE);
+		LazyConnectionDataSourceProxy.FORCE_WRITE.set(false);
 	}
 }
