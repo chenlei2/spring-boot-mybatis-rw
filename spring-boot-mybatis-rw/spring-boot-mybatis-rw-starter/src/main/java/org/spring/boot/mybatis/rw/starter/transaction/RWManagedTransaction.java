@@ -29,7 +29,10 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
-					c.commit();
+					try {
+						c.commit();
+					} catch (Exception e) {
+					}
 				}
 			}
 		}	
@@ -44,7 +47,10 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
-					c.rollback();
+					try {
+						c.rollback();
+					} catch (Exception e) {
+					}
 				}
 			}
 		}		
@@ -58,7 +64,10 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
-				c.close();
+				try {
+					c.close();
+				} catch (Exception e) {
+				}
 			}
 		}	
 		LazyConnectionDataSourceProxy.ConnectionContext.remove();

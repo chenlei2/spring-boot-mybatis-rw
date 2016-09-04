@@ -321,6 +321,9 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 			if (ConnectionContext.get() == null) {
 				ConnectionContext.set(new HashMap<String, Connection>());
 			}
+			if(currentDataSource.get() == null){
+				currentDataSource.set(WRITE);
+			}
 			ConnectionContext.get().put(currentDataSource.get(), target);
 			return target;
 		}
