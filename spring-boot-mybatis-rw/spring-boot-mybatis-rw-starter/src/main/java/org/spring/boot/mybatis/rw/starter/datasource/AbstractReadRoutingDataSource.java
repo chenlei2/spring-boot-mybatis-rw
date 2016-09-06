@@ -13,7 +13,7 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
  * @author chenlei
  *
  */
-public abstract class AbstractReadRoutingDataSource extends LazyConnectionDataSourceProxy implements InitializingBean {
+public abstract class AbstractReadRoutingDataSource implements InitializingBean {
 
 	// 配置文件中配置的read-only datasoure
 	// 可以为真实的datasource，也可以jndi的那种
@@ -95,9 +95,8 @@ public abstract class AbstractReadRoutingDataSource extends LazyConnectionDataSo
 		}
 	}
 
-	@Override
 	public DataSource getTargetDataSource() {
-		if (WRITE.equals(currentDataSource.get())) {
+		if (ConnectionHold.WRITE.equals(ConnectionHold.currentDataSource.get())) {
 			return resolvedWriteDataSource;
 		} else {
 			return loadBalance();

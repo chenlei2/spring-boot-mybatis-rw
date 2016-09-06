@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.mybatis.spring.transaction.SpringManagedTransaction;
-import org.spring.boot.mybatis.rw.starter.datasource.LazyConnectionDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.ConnectionHold;
 
 /**
  * 
@@ -25,7 +25,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void commit() throws SQLException {
 		super.commit();
-		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -43,7 +43,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void rollback() throws SQLException {
 		super.rollback();
-		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -61,7 +61,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void close() throws SQLException {
 		super.close();
-		Map<String, Connection> connectionMap = LazyConnectionDataSourceProxy.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				try {
@@ -70,8 +70,8 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 				}
 			}
 		}	
-		LazyConnectionDataSourceProxy.ConnectionContext.remove();
-		LazyConnectionDataSourceProxy.currentDataSource.set(LazyConnectionDataSourceProxy.WRITE);
-		LazyConnectionDataSourceProxy.FORCE_WRITE.set(false);
+		ConnectionHold.ConnectionContext.remove();
+		ConnectionHold.currentDataSource.set(ConnectionHold.WRITE);
+		ConnectionHold.FORCE_WRITE.set(false);
 	}
 }

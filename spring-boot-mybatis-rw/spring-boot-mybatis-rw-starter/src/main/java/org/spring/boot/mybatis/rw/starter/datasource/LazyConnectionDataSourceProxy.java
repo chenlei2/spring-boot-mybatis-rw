@@ -8,7 +8,6 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -16,7 +15,6 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.Constants;
-import org.springframework.core.NamedThreadLocal;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
@@ -24,15 +22,8 @@ import org.springframework.jdbc.datasource.ConnectionProxy;
  * @author chenlei
  *
  */
-public abstract class LazyConnectionDataSourceProxy implements DataSource {
-
-	public final static ThreadLocal<String> currentDataSource = new NamedThreadLocal<String>("routingdatasource's key");
-	public final static ThreadLocal<Map<String, Connection>> ConnectionContext = new NamedThreadLocal<Map<String, Connection>>(
-			"connection map");
-	public final static ThreadLocal<Boolean>  FORCE_WRITE = new NamedThreadLocal<Boolean>("FORCE_WRITE");
-
-	public static final String READ = "read";
-	public static final String WRITE = "write";
+@Deprecated
+public class LazyConnectionDataSourceProxy implements DataSource {
 
 	/** Constants instance for TransactionDefinition */
 	private static final Constants constants = new Constants(Connection.class);
@@ -42,13 +33,16 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 	private Boolean defaultAutoCommit;
 
 	private Integer defaultTransactionIsolation;
+	
+	private AbstractReadRoutingDataSource abstractReadRoutingDataSource;
 
 	/**
 	 * Create a new LazyConnectionDataSourceProxy.
 	 * 
 	 * @see #setTargetDataSource
 	 */
-	public LazyConnectionDataSourceProxy() {
+	public LazyConnectionDataSourceProxy(AbstractReadRoutingDataSource abstractReadRoutingDataSource) {
+		this.abstractReadRoutingDataSource = abstractReadRoutingDataSource;
 	}
 
 	/**
@@ -102,8 +96,6 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 	public void setDefaultTransactionIsolationName(String constantName) {
 		setDefaultTransactionIsolation(constants.asNumber(constantName).intValue());
 	}
-
-	public abstract DataSource getTargetDataSource();
 
 	/**
 	 * Expose the default auto-commit value.
@@ -218,7 +210,7 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 				// a physical JDBC Connection until absolutely necessary.
 
 				if (method.getName().equals("toString")) {
-					return "Lazy Connection proxy for target DataSource [" + getTargetDataSource() + "]";
+					return "Lazy Connection proxy for target DataSource [" + abstractReadRoutingDataSource.getTargetDataSource() + "]";
 				} else if (method.getName().equals("isReadOnly")) {
 					return this.readOnly;
 				} else if (method.getName().equals("setReadOnly")) {
@@ -273,7 +265,7 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 				if (!hasTargetConnection()) {
 					getTargetConnection(method);
 				}
-				return method.invoke(ConnectionContext.get().get(currentDataSource.get()), args);
+				return method.invoke(ConnectionHold.ConnectionContext.get().get(ConnectionHold.currentDataSource.get()), args);
 			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
@@ -283,7 +275,8 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 		 * Return whether the proxy currently holds a target Connection.
 		 */
 		private boolean hasTargetConnection() {
-			return (ConnectionContext.get() != null && ConnectionContext.get().get(currentDataSource.get()) != null);
+			return (ConnectionHold.ConnectionContext.get() != null 
+					&& ConnectionHold.ConnectionContext.get().get(ConnectionHold.currentDataSource.get()) != null);
 		}
 
 		/**
@@ -298,8 +291,8 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 
 			// Fetch physical Connection from DataSource.
 			Connection target = (this.username != null)
-					? getTargetDataSource().getConnection(this.username, this.password)
-					: getTargetDataSource().getConnection();
+					? abstractReadRoutingDataSource.getTargetDataSource().getConnection(this.username, this.password)
+					: abstractReadRoutingDataSource.getTargetDataSource().getConnection();
 
 			// Apply kept transaction settings, if any.
 			if (this.readOnly) {
@@ -318,35 +311,35 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 				target.setAutoCommit(this.autoCommit);
 			}
 
-			if (ConnectionContext.get() == null) {
-				ConnectionContext.set(new HashMap<String, Connection>());
+			if (ConnectionHold.ConnectionContext.get() == null) {
+				ConnectionHold.ConnectionContext.set(new HashMap<String, Connection>());
 			}
-			if(currentDataSource.get() == null){
-				currentDataSource.set(WRITE);
+			if(ConnectionHold.currentDataSource.get() == null){
+				ConnectionHold.currentDataSource.set(ConnectionHold.WRITE);
 			}
-			ConnectionContext.get().put(currentDataSource.get(), target);
+			ConnectionHold.ConnectionContext.get().put(ConnectionHold.currentDataSource.get(), target);
 			return target;
 		}
 	}
 
 	@Override
 	public PrintWriter getLogWriter() throws SQLException {
-		return getTargetDataSource().getLogWriter();
+		return abstractReadRoutingDataSource.getTargetDataSource().getLogWriter();
 	}
 
 	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
-		getTargetDataSource().setLogWriter(out);
+		abstractReadRoutingDataSource.getTargetDataSource().setLogWriter(out);
 	}
 
 	@Override
 	public int getLoginTimeout() throws SQLException {
-		return getTargetDataSource().getLoginTimeout();
+		return abstractReadRoutingDataSource.getTargetDataSource().getLoginTimeout();
 	}
 
 	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
-		getTargetDataSource().setLoginTimeout(seconds);
+		abstractReadRoutingDataSource.getTargetDataSource().setLoginTimeout(seconds);
 	}
 
 	// ---------------------------------------------------------------------
@@ -359,12 +352,12 @@ public abstract class LazyConnectionDataSourceProxy implements DataSource {
 		if (iface.isInstance(this)) {
 			return (T) this;
 		}
-		return getTargetDataSource().unwrap(iface);
+		return abstractReadRoutingDataSource.getTargetDataSource().unwrap(iface);
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return (iface.isInstance(this) || getTargetDataSource().isWrapperFor(iface));
+		return (iface.isInstance(this) || abstractReadRoutingDataSource.getTargetDataSource().isWrapperFor(iface));
 	}
 
 	// ---------------------------------------------------------------------
