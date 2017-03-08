@@ -96,7 +96,7 @@ public abstract class AbstractReadRoutingDataSource implements InitializingBean 
 	}
 
 	public DataSource getTargetDataSource() {
-		if (ConnectionHold.WRITE.equals(ConnectionHold.currentDataSource.get())) {
+		if (ConnectionHold.WRITE.equals(ConnectionHold.CURRENT_DATASOURCE.get())) {
 			return resolvedWriteDataSource;
 		} else {
 			return loadBalance();

@@ -42,7 +42,7 @@
 	        </list>
 	    </property>
 	</bean>
-	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.LazyConnectionDataSourceProxy">
+	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy">
 		 <constructor-arg ref="routingDataSourceProxy" /> 
 	</bean>
 	<!--自定义事务工厂  -->

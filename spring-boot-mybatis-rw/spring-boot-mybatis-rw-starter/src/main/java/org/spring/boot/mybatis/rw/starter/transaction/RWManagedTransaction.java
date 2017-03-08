@@ -25,7 +25,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void commit() throws SQLException {
 		super.commit();
-		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -43,7 +43,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void rollback() throws SQLException {
 		super.rollback();
-		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				if(!c.isClosed() && !c.getAutoCommit()){
@@ -61,7 +61,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 */
 	public void close() throws SQLException {
 		super.close();
-		Map<String, Connection> connectionMap = ConnectionHold.ConnectionContext.get();
+		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		if(connectionMap !=null){
 			for (Connection c : connectionMap.values()) {
 				try {
@@ -70,8 +70,8 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 				}
 			}
 		}	
-		ConnectionHold.ConnectionContext.remove();
-		ConnectionHold.currentDataSource.set(ConnectionHold.WRITE);
+		ConnectionHold.CONNECTION_CONTEXT.remove();
+		ConnectionHold.CURRENT_DATASOURCE.set(ConnectionHold.WRITE);
 		ConnectionHold.FORCE_WRITE.set(false);
 	}
 }

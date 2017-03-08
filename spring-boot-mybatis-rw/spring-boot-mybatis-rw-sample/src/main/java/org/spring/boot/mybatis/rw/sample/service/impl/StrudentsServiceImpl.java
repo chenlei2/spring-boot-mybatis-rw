@@ -25,7 +25,7 @@ public class StrudentsServiceImpl implements StrudentsService {
 		studentsMapper.updateByPrimaryKeySelective(students);
 		students = studentsMapper.selectByPrimaryKey(2L);
 		System.out.println(students.getName());
-//		throw new RuntimeException();
+		throw new RuntimeException();
 	}
 
 }

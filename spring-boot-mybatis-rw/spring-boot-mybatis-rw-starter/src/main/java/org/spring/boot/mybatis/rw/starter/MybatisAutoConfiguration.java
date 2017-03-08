@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
@@ -12,6 +11,7 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
+import org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource;
 import org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
@@ -62,7 +62,7 @@ public class MybatisAutoConfiguration {
 	}
 
 	@Bean
-	public SqlSessionFactory sqlSessionFactory(DataSource dataSource)
+	public SqlSessionFactory sqlSessionFactory(DataSourceProxy dataSource)
 			throws Exception {
 
 		SqlSessionFactoryBean factory = new SqlSessionFactoryBean();
@@ -102,17 +102,22 @@ public class MybatisAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(name = { "writeDataSource", "readDataSources" })
-	public DataSource dataSource(
+	public AbstractReadRoutingDataSource readRoutingDataSource(
 			@Qualifier("readDataSources") Object readDataSoures,
 			@Qualifier("writeDataSource") Object writeDataSource) {
 		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
 		proxy.setReadDataSoures((List<Object>) (readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
-		return new DataSourceProxy(proxy);
+		return proxy;
 	}
 
 	@Bean
-	public DataSourceTransactionManager transactionManager(DataSource DataSource) {
+	public DataSourceProxy dataSource(AbstractReadRoutingDataSource abstractReadRoutingDataSource) {
+		return new DataSourceProxy(abstractReadRoutingDataSource);
+	}
+
+	@Bean
+	public DataSourceTransactionManager transactionManager(DataSourceProxy DataSource) {
 		return new DataSourceTransactionManager(DataSource);
 	}
 
