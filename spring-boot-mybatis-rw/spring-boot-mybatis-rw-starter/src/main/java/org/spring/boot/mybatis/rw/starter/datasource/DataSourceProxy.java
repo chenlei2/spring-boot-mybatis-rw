@@ -17,7 +17,7 @@ import org.springframework.core.Constants;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
- * 
+ * 数据库代理，具体数据源由DataSourceRout提供
  * @author chenlei
  *
  */
@@ -32,15 +32,15 @@ public class DataSourceProxy implements DataSource {
 
 	private Integer defaultTransactionIsolation;
 	
-	private AbstractReadRoutingDataSource abstractReadRoutingDataSource;
+	private DataSourceRout dataSourceRout;
 
 	/**
 	 * Create a new LazyConnectionDataSourceProxy.
 	 * 
 	 * @see #setTargetDataSource
 	 */
-	public DataSourceProxy(AbstractReadRoutingDataSource abstractReadRoutingDataSource) {
-		this.abstractReadRoutingDataSource = abstractReadRoutingDataSource;
+	public DataSourceProxy(DataSourceRout dataSourceRout) {
+		this.dataSourceRout = dataSourceRout;
 	}
 
 	/**
@@ -208,7 +208,7 @@ public class DataSourceProxy implements DataSource {
 				// a physical JDBC Connection until absolutely necessary.
 
 				if (method.getName().equals("toString")) {
-					return "Lazy Connection proxy for target DataSource [" + abstractReadRoutingDataSource.getTargetDataSource() + "]";
+					return "Lazy Connection proxy for target DataSource [" + dataSourceRout.getTargetDataSource() + "]";
 				} else if (method.getName().equals("isReadOnly")) {
 					return this.readOnly;
 				} else if (method.getName().equals("setReadOnly")) {
@@ -263,7 +263,7 @@ public class DataSourceProxy implements DataSource {
 				if (!hasTargetConnection()) {
 					getTargetConnection(method);
 				}
-				return method.invoke(ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_DATASOURCE.get()), args);
+				return method.invoke(ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
 			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
@@ -274,7 +274,7 @@ public class DataSourceProxy implements DataSource {
 		 */
 		private boolean hasTargetConnection() {
 			return (ConnectionHold.CONNECTION_CONTEXT.get() != null 
-					&& ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_DATASOURCE.get()) != null);
+					&& ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()) != null);
 		}
 
 		/**
@@ -289,8 +289,8 @@ public class DataSourceProxy implements DataSource {
 
 			// Fetch physical Connection from DataSource.
 			Connection target = (this.username != null)
-					? abstractReadRoutingDataSource.getTargetDataSource().getConnection(this.username, this.password)
-					: abstractReadRoutingDataSource.getTargetDataSource().getConnection();
+					? dataSourceRout.getTargetDataSource().getConnection(this.username, this.password)
+					: dataSourceRout.getTargetDataSource().getConnection();
 
 			// Apply kept transaction settings, if any.
 			if (this.readOnly) {
@@ -308,29 +308,29 @@ public class DataSourceProxy implements DataSource {
 			if (this.autoCommit != null && this.autoCommit != target.getAutoCommit()) {
 				target.setAutoCommit(this.autoCommit);
 			}
-			ConnectionHold.CONNECTION_CONTEXT.get().put(ConnectionHold.CURRENT_DATASOURCE.get(), target);
+			ConnectionHold.CONNECTION_CONTEXT.get().put(ConnectionHold.CURRENT_CONNECTION.get(), target);
 			return target;
 		}
 	}
 
 	@Override
 	public PrintWriter getLogWriter() throws SQLException {
-		return abstractReadRoutingDataSource.getTargetDataSource().getLogWriter();
+		return dataSourceRout.getTargetDataSource().getLogWriter();
 	}
 
 	@Override
 	public void setLogWriter(PrintWriter out) throws SQLException {
-		abstractReadRoutingDataSource.getTargetDataSource().setLogWriter(out);
+		dataSourceRout.getTargetDataSource().setLogWriter(out);
 	}
 
 	@Override
 	public int getLoginTimeout() throws SQLException {
-		return abstractReadRoutingDataSource.getTargetDataSource().getLoginTimeout();
+		return dataSourceRout.getTargetDataSource().getLoginTimeout();
 	}
 
 	@Override
 	public void setLoginTimeout(int seconds) throws SQLException {
-		abstractReadRoutingDataSource.getTargetDataSource().setLoginTimeout(seconds);
+		dataSourceRout.getTargetDataSource().setLoginTimeout(seconds);
 	}
 
 	// ---------------------------------------------------------------------
@@ -343,12 +343,12 @@ public class DataSourceProxy implements DataSource {
 		if (iface.isInstance(this)) {
 			return (T) this;
 		}
-		return abstractReadRoutingDataSource.getTargetDataSource().unwrap(iface);
+		return dataSourceRout.getTargetDataSource().unwrap(iface);
 	}
 
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
-		return (iface.isInstance(this) || abstractReadRoutingDataSource.getTargetDataSource().isWrapperFor(iface));
+		return (iface.isInstance(this) || dataSourceRout.getTargetDataSource().isWrapperFor(iface));
 	}
 
 	// ---------------------------------------------------------------------

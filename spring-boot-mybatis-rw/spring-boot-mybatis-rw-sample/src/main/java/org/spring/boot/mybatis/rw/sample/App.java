@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import org.mybatis.spring.annotation.MapperScan;
 import org.spring.boot.mybatis.rw.sample.service.StrudentsService;
+import org.spring.boot.mybatis.rw.starter.datasource.DataSourceHold;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,7 +30,12 @@ public class App
 	
 	@RequestMapping("/hello")
 	String home() {
+		/**
+		 * 实际工作中，这一步通过用户登录拦截器设置用户当前所在数据组
+		 */
+		DataSourceHold.CURRENT_DATASOURCE.set("rout1");
 		strudentsService.rw(); 
+
 		return "Hello World!";
 	}
 	

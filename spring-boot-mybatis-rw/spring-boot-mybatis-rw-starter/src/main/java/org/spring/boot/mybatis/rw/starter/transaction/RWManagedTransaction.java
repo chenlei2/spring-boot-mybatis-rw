@@ -71,7 +71,7 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 			}
 		}	
 		ConnectionHold.CONNECTION_CONTEXT.remove();
-		ConnectionHold.CURRENT_DATASOURCE.set(ConnectionHold.WRITE);
+		ConnectionHold.CURRENT_CONNECTION.set(ConnectionHold.WRITE);
 		ConnectionHold.FORCE_WRITE.set(false);
 	}
 }

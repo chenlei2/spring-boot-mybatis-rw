@@ -23,7 +23,7 @@ import org.spring.boot.mybatis.rw.starter.datasource.ConnectionHold;
 import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
- * 不侵入mybatis的逻辑，实现读写分离
+ * 数据源读写分离路由
  * 
  * @author chenlei
  *
@@ -62,7 +62,7 @@ public class RWPlugin implements Interceptor {
 	}
 	
 	private void routeConnection(String key, Connection conn) {
-		ConnectionHold.CURRENT_DATASOURCE.set(key);
+		ConnectionHold.CURRENT_CONNECTION.set(key);
 		if (!ConnectionHold.CONNECTION_CONTEXT.get().containsKey(key)) {
 			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conn);
 			ConnectionProxy conToUse = (ConnectionProxy) conn;

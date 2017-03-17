@@ -1,11 +1,15 @@
 package org.spring.boot.mybatis.rw.sample;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource;
-import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.AbstractRWDataSourceRout;
+import org.spring.boot.mybatis.rw.starter.datasource.DataSourceRout;
+import org.spring.boot.mybatis.rw.starter.datasource.UserDataSourceRout;
+import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,12 +52,15 @@ public class DataConfiguration {
         return dataSources;  
     } 
     
-	/*@Bean //实现自己的读库负责均衡
-	public AbstractReadRoutingDataSource roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")Object writeDataSource) {
-		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
+	@Bean 
+	public DataSourceRout roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")Object writeDataSource) {
+		AbstractRWDataSourceRout proxy = new RoundRobinRWDataSourceRout();
 		proxy.setReadDataSoures((List<Object>)(readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
+		Map<String, AbstractRWDataSourceRout> dataSourceMap = new HashMap<String, AbstractRWDataSourceRout>();
+		dataSourceMap.put("rout1", proxy);
+		UserDataSourceRout result = new UserDataSourceRout(dataSourceMap);
 		return proxy;
-	}*/
+	}
    
 }

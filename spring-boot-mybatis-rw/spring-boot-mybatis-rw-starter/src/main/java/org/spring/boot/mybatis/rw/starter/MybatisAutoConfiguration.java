@@ -11,9 +11,9 @@ import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource;
 import org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy;
-import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy;
+import org.spring.boot.mybatis.rw.starter.datasource.DataSourceRout;
+import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
 import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,18 +102,18 @@ public class MybatisAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(name = { "writeDataSource", "readDataSources" })
-	public AbstractReadRoutingDataSource readRoutingDataSource(
+	public DataSourceRout readRoutingDataSource(
 			@Qualifier("readDataSources") Object readDataSoures,
 			@Qualifier("writeDataSource") Object writeDataSource) {
-		RoundRobinRWRoutingDataSourceProxy proxy = new RoundRobinRWRoutingDataSourceProxy();
+		RoundRobinRWDataSourceRout proxy = new RoundRobinRWDataSourceRout();
 		proxy.setReadDataSoures((List<Object>) (readDataSoures));
 		proxy.setWriteDataSource(writeDataSource);
 		return proxy;
 	}
 
 	@Bean
-	public DataSourceProxy dataSource(AbstractReadRoutingDataSource abstractReadRoutingDataSource) {
-		return new DataSourceProxy(abstractReadRoutingDataSource);
+	public DataSourceProxy dataSource(DataSourceRout dataSourceRout) {
+		return new DataSourceProxy(dataSourceRout);
 	}
 
 	@Bean

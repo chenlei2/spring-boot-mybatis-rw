@@ -13,7 +13,7 @@ import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
  * @author chenlei
  *
  */
-public abstract class AbstractReadRoutingDataSource implements InitializingBean {
+public abstract class AbstractRWDataSourceRout implements DataSourceRout, InitializingBean {
 
 	// 配置文件中配置的read-only datasoure
 	// 可以为真实的datasource，也可以jndi的那种
@@ -94,9 +94,9 @@ public abstract class AbstractReadRoutingDataSource implements InitializingBean 
 					"Illegal data source value - only [javax.sql.DataSource] and String supported: " + dataSource);
 		}
 	}
-
+	@Override
 	public DataSource getTargetDataSource() {
-		if (ConnectionHold.WRITE.equals(ConnectionHold.CURRENT_DATASOURCE.get())) {
+		if (ConnectionHold.WRITE.equals(ConnectionHold.CURRENT_CONNECTION.get())) {
 			return resolvedWriteDataSource;
 		} else {
 			return loadBalance();
