@@ -52,15 +52,16 @@ public class DataConfiguration {
         return dataSources;  
     } 
     
-	@Bean 
+    @Bean 
 	public DataSourceRout roundRobinDataSouceProxy(@Qualifier("readDataSources")Object readDataSoures, @Qualifier("writeDataSource")Object writeDataSource) {
 		AbstractRWDataSourceRout proxy = new RoundRobinRWDataSourceRout();
-		proxy.setReadDataSoures((List<Object>)(readDataSoures));
+		proxy.setReadDataSoures((List<Object>)readDataSoures);
 		proxy.setWriteDataSource(writeDataSource);
+		proxy.afterPropertiesSet();
 		Map<String, AbstractRWDataSourceRout> dataSourceMap = new HashMap<String, AbstractRWDataSourceRout>();
 		dataSourceMap.put("rout1", proxy);
 		UserDataSourceRout result = new UserDataSourceRout(dataSourceMap);
-		return proxy;
+		return result;
 	}
    
 }
