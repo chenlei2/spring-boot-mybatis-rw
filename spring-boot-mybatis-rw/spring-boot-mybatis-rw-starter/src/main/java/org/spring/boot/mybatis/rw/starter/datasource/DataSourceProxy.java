@@ -261,9 +261,13 @@ public class DataSourceProxy implements DataSource {
 			// invoke method on target connection.
 			try {
 				if (!hasTargetConnection()) {
-					getTargetConnection(method);
+					Connection conn = getTargetConnection(method);
+					return method.invoke(conn, args);
+
+				} else {
+					return method.invoke(ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
+
 				}
-				return method.invoke(ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
 			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
@@ -308,7 +312,6 @@ public class DataSourceProxy implements DataSource {
 			if (this.autoCommit != null && this.autoCommit != target.getAutoCommit()) {
 				target.setAutoCommit(this.autoCommit);
 			}
-			ConnectionHold.CONNECTION_CONTEXT.get().put(ConnectionHold.CURRENT_CONNECTION.get(), target);
 			return target;
 		}
 	}

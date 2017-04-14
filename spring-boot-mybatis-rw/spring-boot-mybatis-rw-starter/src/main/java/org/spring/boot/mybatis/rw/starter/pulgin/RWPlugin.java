@@ -64,9 +64,8 @@ public class RWPlugin implements Interceptor {
 	private void routeConnection(String key, Connection conn) {
 		ConnectionHold.CURRENT_CONNECTION.set(key);
 		if (!ConnectionHold.CONNECTION_CONTEXT.get().containsKey(key)) {
-			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conn);
 			ConnectionProxy conToUse = (ConnectionProxy) conn;
-			conToUse.getTargetConnection();
+			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conToUse.getTargetConnection());
 		}
 	}
 
