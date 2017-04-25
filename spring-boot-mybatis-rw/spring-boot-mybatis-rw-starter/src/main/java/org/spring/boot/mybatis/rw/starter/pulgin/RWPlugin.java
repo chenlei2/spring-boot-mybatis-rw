@@ -63,6 +63,7 @@ public class RWPlugin implements Interceptor {
 	
 	private void routeConnection(String key, Connection conn) {
 		ConnectionHold.CURRENT_CONNECTION.set(key);
+		// 同一个线程下保证最多只有一个写数据链接和读数据链接
 		if (!ConnectionHold.CONNECTION_CONTEXT.get().containsKey(key)) {
 			ConnectionProxy conToUse = (ConnectionProxy) conn;
 			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conToUse.getTargetConnection());
