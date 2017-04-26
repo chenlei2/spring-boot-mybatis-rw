@@ -26,7 +26,6 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 * {@inheritDoc}
 	 */
 	public void commit() throws SQLException {
-		super.commit();
 		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		Connection writeCon = connectionMap.remove(ConnectionHold.WRITE);
 		if(writeCon != null){
@@ -46,7 +45,6 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 * {@inheritDoc}
 	 */
 	public void rollback() throws SQLException {
-		super.rollback();
 		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		Connection writeCon = connectionMap.remove(ConnectionHold.WRITE);
 		if(writeCon != null){
@@ -66,7 +64,6 @@ public class RWManagedTransaction extends SpringManagedTransaction {
 	 * {@inheritDoc}
 	 */
 	public void close() throws SQLException {
-		super.close();
 		Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 		Connection writeCon = connectionMap.remove(ConnectionHold.WRITE);
 		if(writeCon != null){
