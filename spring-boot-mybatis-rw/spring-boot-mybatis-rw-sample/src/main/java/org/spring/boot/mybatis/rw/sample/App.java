@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
-@Import(value={DataConfiguration.class})
+//@Import(value={DataConfiguration.class})
 @MapperScan("org.spring.boot.mybatis.rw.sample.mapper")
 public class App 
 {

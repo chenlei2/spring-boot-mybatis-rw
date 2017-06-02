@@ -37,7 +37,7 @@ public abstract class AbstractRWDataSourceRout implements DataSourceRout, Initia
 		return readDsSize;
 	}
 
-	public void setReadDataSoures(List<Object> readDataSoures) {
+	public void setReadDataSoures(List readDataSoures) {
 		this.readDataSoures = readDataSoures;
 	}
 

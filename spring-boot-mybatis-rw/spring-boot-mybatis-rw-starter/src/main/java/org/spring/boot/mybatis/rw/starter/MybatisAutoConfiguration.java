@@ -1,5 +1,6 @@
 package org.spring.boot.mybatis.rw.starter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.plugin.Interceptor;
 import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.tomcat.jdbc.pool.DataSource;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy;
@@ -17,10 +19,9 @@ import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSource
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
 import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +40,7 @@ import org.springframework.util.StringUtils;
 @Configuration()
 @ConditionalOnClass({ SqlSessionFactory.class, SqlSessionFactoryBean.class })
 @EnableConfigurationProperties(MybatisProperties.class)
+@ConfigurationProperties("spring.mybatis.rw")
 public class MybatisAutoConfiguration {
 
 	@Autowired
@@ -51,6 +53,8 @@ public class MybatisAutoConfiguration {
 
 	@Autowired(required = false)
 	private DatabaseIdProvider databaseIdProvider;
+	
+	private List<DataSource> readDataSources = new ArrayList<>();
 
 	@PostConstruct
 	public void checkConfigFileExists() {
@@ -98,17 +102,25 @@ public class MybatisAutoConfiguration {
 		return factory.getObject();
 	}
 
-	@SuppressWarnings("unchecked")
+
 	@Bean
 	@ConditionalOnMissingBean
-	@ConditionalOnBean(name = { "writeDataSource", "readDataSources" })
-	public DataSourceRout readRoutingDataSource(
-			@Qualifier("readDataSources") Object readDataSoures,
-			@Qualifier("writeDataSource") Object writeDataSource) {
+	public DataSourceRout readRoutingDataSource() {
 		RoundRobinRWDataSourceRout proxy = new RoundRobinRWDataSourceRout();
-		proxy.setReadDataSoures((List<Object>) (readDataSoures));
-		proxy.setWriteDataSource(writeDataSource);
+		proxy.setReadDataSoures(getReadDataSources());
+		proxy.setWriteDataSource(writeDataSource());
 		return proxy;
+	}
+
+	
+	
+	public List<DataSource> getReadDataSources() {
+		return readDataSources;
+	}
+	@ConfigurationProperties("spring.mybatis.rw.writeDataSource")
+	@Bean
+	public DataSource writeDataSource() {
+		return new DataSource();
 	}
 
 	@Bean
