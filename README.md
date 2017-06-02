@@ -9,8 +9,23 @@
 - datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法
 - transaction：读写数据源的事务处理
 - pulgin：mybatis插件实现读写路由
+spring-boot 配置
+---
+spring.mybatis.rw.readDataSources[0].url=jdbc:MySql://localhost:3306/test?characterEncoding=UTF-8
+spring.mybatis.rw.readDataSources[0].driverClassName=com.mysql.jdbc.Driver
+spring.mybatis.rw.readDataSources[0].username=root
+spring.mybatis.rw.readDataSources[0].password=123456
+spring.mybatis.rw.readDataSources[1].url=jdbc:MySql://localhost:3306/test?characterEncoding=UTF-8
+spring.mybatis.rw.readDataSources[1].driverClassName=com.mysql.jdbc.Driver
+spring.mybatis.rw.readDataSources[1].username=root
+spring.mybatis.rw.readDataSources[1].password=123456
 
-配置
+spring.mybatis.rw.writeDataSource.url=jdbc:MySql://localhost:3306/chenlei?characterEncoding=UTF-8
+spring.mybatis.rw.writeDataSource.driverClassName=com.mysql.jdbc.Driver
+spring.mybatis.rw.writeDataSource.username=root
+spring.mybatis.rw.writeDataSource.password=123456
+
+XML配置
 ---
 - datasource：
 ```
