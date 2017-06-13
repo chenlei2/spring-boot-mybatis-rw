@@ -17,7 +17,6 @@ import org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy;
 import org.spring.boot.mybatis.rw.starter.datasource.DataSourceRout;
 import org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout;
 import org.spring.boot.mybatis.rw.starter.pulgin.RWPlugin;
-import org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -96,8 +95,6 @@ public class MybatisAutoConfiguration {
 		if (!ObjectUtils.isEmpty(this.properties.resolveMapperLocations())) {
 			factory.setMapperLocations(this.properties.resolveMapperLocations());
 		}
-
-		factory.setTransactionFactory(new RWManagedTransactionFactory());
 		factory.setDataSource(dataSource);
 		return factory.getObject();
 	}

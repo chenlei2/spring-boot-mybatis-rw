@@ -3,6 +3,7 @@ package org.spring.boot.mybatis.rw.starter.pulgin;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
@@ -66,7 +67,15 @@ public class RWPlugin implements Interceptor {
 		// 同一个线程下保证最多只有一个写数据链接和读数据链接
 		if (!ConnectionHold.CONNECTION_CONTEXT.get().containsKey(key)) {
 			ConnectionProxy conToUse = (ConnectionProxy) conn;
-			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conToUse.getTargetConnection());
+			conn = conToUse.getTargetConnection();
+			if (ConnectionHold.READ.equals(key)) {
+				try {
+					conn.setAutoCommit(true); 
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conn);
 		}
 	}
 

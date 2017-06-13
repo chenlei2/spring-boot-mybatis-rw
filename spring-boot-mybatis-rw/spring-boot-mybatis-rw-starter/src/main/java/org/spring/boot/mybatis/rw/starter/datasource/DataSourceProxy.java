@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
@@ -18,6 +19,7 @@ import org.springframework.jdbc.datasource.ConnectionProxy;
 
 /**
  * 数据库代理，具体数据源由DataSourceRout提供
+ * 
  * @author chenlei
  *
  */
@@ -31,7 +33,7 @@ public class DataSourceProxy implements DataSource {
 	private Boolean defaultAutoCommit;
 
 	private Integer defaultTransactionIsolation;
-	
+
 	private DataSourceRout dataSourceRout;
 
 	/**
@@ -141,7 +143,7 @@ public class DataSourceProxy implements DataSource {
 	 */
 	@Override
 	public Connection getConnection(String username, String password) throws SQLException {
-		return  (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
+		return (Connection) Proxy.newProxyInstance(ConnectionProxy.class.getClassLoader(),
 				new Class<?>[] { ConnectionProxy.class }, new LazyConnectionInvocationHandler(username, password));
 	}
 
@@ -254,6 +256,32 @@ public class DataSourceProxy implements DataSource {
 					// SQLException.
 					throw new SQLException("Illegal operation: connection is closed");
 				}
+			} else {
+				if (method.getName().equals("commit")) {
+					Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
+					Connection writeCon = connectionMap.get(ConnectionHold.WRITE);
+					if (writeCon != null) {
+						writeCon.commit();
+					}
+					return null;
+				}
+				if (method.getName().equals("rollback")) {
+					Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
+					Connection writeCon = connectionMap.get(ConnectionHold.WRITE);
+					if (writeCon != null) {
+						writeCon.rollback();
+					}
+					return null;
+				}
+				if (method.getName().equals("close")) {
+					Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
+					Connection writeCon = connectionMap.get(ConnectionHold.WRITE);
+					if (writeCon != null) {
+						writeCon.close();
+					}
+					this.closed = true;
+					return null;
+				}
 			}
 
 			// Target Connection already fetched,
@@ -265,7 +293,8 @@ public class DataSourceProxy implements DataSource {
 					return method.invoke(conn, args);
 
 				} else {
-					return method.invoke(ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
+					return method.invoke(
+							ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
 
 				}
 			} catch (InvocationTargetException ex) {
@@ -277,7 +306,7 @@ public class DataSourceProxy implements DataSource {
 		 * Return whether the proxy currently holds a target Connection.
 		 */
 		private boolean hasTargetConnection() {
-			return (ConnectionHold.CONNECTION_CONTEXT.get() != null 
+			return (ConnectionHold.CONNECTION_CONTEXT.get() != null
 					&& ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()) != null);
 		}
 
