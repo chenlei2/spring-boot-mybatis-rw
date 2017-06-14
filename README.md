@@ -45,24 +45,6 @@ XML配置
 	    </property>
 	</bean>
 ``` 
-- transaction：
-``` 
-<!--自定义事务工厂  -->
-	<bean id="transactionFactory" class="org.spring.boot.mybatis.rw.starter.transaction.RWManagedTransactionFactory"/>
-	<!-- mybatis配置 -->
-	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="transactionFactory" ref="transactionFactory"/>
-		<property name="configLocation" value="classpath:mybatis-plugin-config.xml" />
-		<!-- mapper和resultmap配置路径 -->
-		<property name="mapperLocations">
-			<list>
-				<value>classpath:org.spring.boot.mybatis.rw.sample.mapper/**/*Mapper.xml
-				</value>
-			</list>
-		</property> 
-	</bean>
-``` 
 
 总结
 ---
