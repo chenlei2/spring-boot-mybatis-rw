@@ -5,9 +5,8 @@
 
 介绍
 ---
-此插件由以下3部分组成
+此插件由以下2部分组成
 - datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法
-- transaction：读写数据源的事务处理
 - pulgin：mybatis插件实现读写路由
 
 spring-boot 配置
