@@ -30,14 +30,14 @@ public class DataSourceProxy implements DataSource {
 
 	private static final Log logger = LogFactory.getLog(DataSourceProxy.class);
 
-	private Boolean defaultAutoCommit;
+	private Boolean defaultAutoCommit = Boolean.TRUE;
 
-	private Integer defaultTransactionIsolation;
+	private Integer defaultTransactionIsolation = 2;
 
 	private DataSourceRout dataSourceRout;
 
 	/**
-	 * Create a new LazyConnectionDataSourceProxy.
+	 * Create a new LazyConnectionDataSourceProxy.a
 	 * 
 	 * @see #setTargetDataSource
 	 */
@@ -275,7 +275,9 @@ public class DataSourceProxy implements DataSource {
 				}
 				if (method.getName().equals("close")) {
 					Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
-					Connection writeCon = connectionMap.get(ConnectionHold.WRITE);
+					connectionMap.remove(ConnectionHold.READ);
+					ConnectionHold.FORCE_WRITE.set(Boolean.FALSE);
+					Connection writeCon = connectionMap.remove(ConnectionHold.WRITE);
 					if (writeCon != null) {
 						writeCon.close();
 					}
@@ -288,15 +290,8 @@ public class DataSourceProxy implements DataSource {
 			// or target Connection necessary for current operation ->
 			// invoke method on target connection.
 			try {
-				if (!hasTargetConnection()) {
-					Connection conn = getTargetConnection(method);
-					return method.invoke(conn, args);
-
-				} else {
-					return method.invoke(
-							ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
-
-				}
+				return method.invoke(
+						ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
 			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
