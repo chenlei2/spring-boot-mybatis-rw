@@ -13,14 +13,14 @@ public class StrudentsServiceImpl implements StrudentsService {
 	private StudentsMapper studentsMapper;
 	@Autowired
 	private SqlSessionTemplate sqlSessionTemplate;
-	@Transactional
+//	@Transactional
 	public void rw() {
 
 		Students students = (Students)sqlSessionTemplate.selectOne("selectByPrimaryKey", 1L);
 		System.out.println(students.getName());
 		students.setName("rw");
 		sqlSessionTemplate.update("updateByPrimaryKeySelective", students);
-		//studentsMapper.updateByPrimaryKeySelective(students);
+		studentsMapper.updateByPrimaryKeySelective(students);
 		students.setId(2L);
 		studentsMapper.updateByPrimaryKeySelective(students);
 		students = studentsMapper.selectByPrimaryKey(2L);
