@@ -52,7 +52,7 @@ public class RWPlugin implements Interceptor {
 			}
 			String key = ConnectionHold.WRITE;
 
-			if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT) {
+			if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT && !mappedStatement.getId().endsWith("!selectKey")) {
 				key = ConnectionHold.READ;
 			} 
 			routeConnection(key, conn);

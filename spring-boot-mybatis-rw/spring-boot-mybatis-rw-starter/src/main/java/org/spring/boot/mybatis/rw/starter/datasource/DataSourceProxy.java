@@ -37,7 +37,7 @@ public class DataSourceProxy implements DataSource {
 	private DataSourceRout dataSourceRout;
 
 	/**
-	 * Create a new LazyConnectionDataSourceProxy.
+	 * Create a new LazyConnectionDataSourceProxy.a
 	 * 
 	 * @see #setTargetDataSource
 	 */
@@ -274,6 +274,7 @@ public class DataSourceProxy implements DataSource {
 					return null;
 				}
 				if (method.getName().equals("close")) {
+		            ConnectionHold.FORCE_WRITE.set(Boolean.FALSE);
 					Map<String, Connection> connectionMap = ConnectionHold.CONNECTION_CONTEXT.get();
 					Connection readCon = connectionMap.remove(ConnectionHold.READ);
 					if (readCon != null) {
@@ -295,7 +296,6 @@ public class DataSourceProxy implements DataSource {
 			try {
 			    return method.invoke(
 	                     ConnectionHold.CONNECTION_CONTEXT.get().get(ConnectionHold.CURRENT_CONNECTION.get()), args);
-
 			} catch (InvocationTargetException ex) {
 				throw ex.getTargetException();
 			}
