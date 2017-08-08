@@ -2,7 +2,8 @@
 SQLyog 企业版 - MySQL GUI v8.14 
 MySQL - 5.5.28 : Database - test
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -24,7 +25,10 @@ CREATE TABLE `students` (
   `id` bigint(20) NOT NULL,
   `name` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF-8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `shuhua`.`students` (`id`, `name`) VALUES ('1', '小芳');
+INSERT INTO `shuhua`.`students` (`id`, `name`) VALUES ('2', '小花');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
