@@ -31,8 +31,8 @@
 	</bean>
 	
 	<!--简单的一个master和一个slaver 读写分离的数据源 -->
-	<bean id="routingDataSourceProxy" 
-	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy">
+	<bean id="roundRobinRWDataSourceRout"
+	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
 	    <property name="writeDataSource" ref="writeDS"/>
 	    <property name="readDataSoures">
 	        <list>
@@ -43,7 +43,7 @@
 	    </property>
 	</bean>
 	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy">
-		 <constructor-arg ref="routingDataSourceProxy" /> 
+		<constructor-arg ref="roundRobinRWDataSourceRout"/>
 	</bean>
 		<!-- mybatis配置 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

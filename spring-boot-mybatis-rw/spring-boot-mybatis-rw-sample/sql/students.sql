@@ -27,8 +27,8 @@ CREATE TABLE `students` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `shuhua`.`students` (`id`, `name`) VALUES ('1', '小芳');
-INSERT INTO `shuhua`.`students` (`id`, `name`) VALUES ('2', '小花');
+INSERT INTO `students` (`id`, `name`) VALUES ('1', '小芳');
+INSERT INTO `students` (`id`, `name`) VALUES ('2', '小花');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
