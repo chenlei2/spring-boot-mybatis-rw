@@ -1,0 +1,93 @@
+//	@Transactional()
+
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+select 
+     
+    id, name
+   
+    from students
+    where id = ?************************
+close^^^^^^^^^^^^^^^^^^^^^^^
+Ð¡·¼
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+update students
+     SET name = ? 
+    where id = ?************************
+close^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+@Transactional()
+
+
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+setAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+false************************
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+select 
+     
+    id, name
+   
+    from students
+    where id = ?************************
+Ð¡·¼
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+update students
+     SET name = ? 
+    where id = ?************************
+commit^^^^^^^^^^^^^^^^^^^^^^^
+setAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+true************************
+isReadOnly^^^^^^^^^^^^^^^^^^^^^^^
+close^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+@Transactional(isolation = Isolation.SERIALIZABLE, readOnly = true)
+
+
+setReadOnly^^^^^^^^^^^^^^^^^^^^^^^
+true************************
+getTransactionIsolation^^^^^^^^^^^^^^^^^^^^^^^
+setTransactionIsolation^^^^^^^^^^^^^^^^^^^^^^^
+8************************
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+setAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+false************************
+getAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+select 
+     
+    id, name
+   
+    from students
+    where id = ?************************
+Ð¡·¼
+getTargetConnection^^^^^^^^^^^^^^^^^^^^^^^
+prepareStatement^^^^^^^^^^^^^^^^^^^^^^^
+update students
+     SET name = ? 
+    where id = ?************************
+2018-04-27 22:13:52.312  INFO 8904 --- [nio-8080-exec-1] o.s.b.f.xml.XmlBeanDefinitionReader      : Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2018-04-27 22:13:52.337  INFO 8904 --- [nio-8080-exec-1] o.s.jdbc.support.SQLErrorCodesFactory    : SQLErrorCodes loaded: [DB2, Derby, H2, HSQL, Informix, MS-SQL, MySQL, Oracle, PostgreSQL, Sybase, Hana]
+getMetaData^^^^^^^^^^^^^^^^^^^^^^^
+rollback^^^^^^^^^^^^^^^^^^^^^^^
+setAutoCommit^^^^^^^^^^^^^^^^^^^^^^^
+true************************
+setTransactionIsolation^^^^^^^^^^^^^^^^^^^^^^^
+2************************
+isReadOnly^^^^^^^^^^^^^^^^^^^^^^^
+setReadOnly^^^^^^^^^^^^^^^^^^^^^^^
+false************************
+close^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
