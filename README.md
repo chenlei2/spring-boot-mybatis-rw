@@ -9,6 +9,9 @@
 - datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法
 - pulgin：mybatis插件实现读写路由
 
+
+@Transactional(isolation = Isolation.SERIALIZABLE) 强制本事务都走写库，插件会把事务隔离级别修改为默认隔离级别
+
 spring-boot 配置
 ---
 ```

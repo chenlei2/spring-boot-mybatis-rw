@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.core.Constants;
 import org.springframework.jdbc.datasource.ConnectionProxy;
+import org.springframework.transaction.annotation.Isolation;
 
 /**
  * 数据库代理，具体数据源由DataSourceRout提供
@@ -179,7 +180,9 @@ public class DataSourceProxy implements DataSource {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			// Invocation on ConnectionProxy interface coming in...
-
+			if (method.getName().equals("setTransactionIsolation") && args != null && (Integer) args[0] == Connection.TRANSACTION_SERIALIZABLE) {
+				 args[0] = defaultTransactionIsolation();
+			}
 			if (method.getName().equals("equals")) {
 				// We must avoid fetching a target Connection for "equals".
 				// Only consider equal when proxies are identical.
@@ -337,8 +340,18 @@ public class DataSourceProxy implements DataSource {
 			if (this.transactionIsolation != null && !this.transactionIsolation.equals(defaultTransactionIsolation())) {
 				target.setTransactionIsolation(this.transactionIsolation);
 			}
+			if (ConnectionHold.READ.equals(ConnectionHold.CURRENT_CONNECTION.get())) {
+				try {
+					target.setAutoCommit(true);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
 			if (this.autoCommit != null && this.autoCommit != target.getAutoCommit()) {
-				target.setAutoCommit(this.autoCommit);
+				if (ConnectionHold.WRITE.equals(ConnectionHold.CURRENT_CONNECTION.get())) {
+					target.setAutoCommit(this.autoCommit);
+				}
 			}
 			return target;
 		}

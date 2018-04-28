@@ -51,8 +51,8 @@ public class RWPlugin implements Interceptor {
 				mappedStatement = (MappedStatement) metaObject.getValue("mappedStatement");
 			}
 			String key = ConnectionHold.WRITE;
-
-			if (mappedStatement.getSqlCommandType() == SqlCommandType.SELECT && !mappedStatement.getId().endsWith("!selectKey")) {
+			String sel = statementHandler.getBoundSql().getSql().trim().substring(0,3);
+			if (sel.equalsIgnoreCase("sel") && !mappedStatement.getId().endsWith(".insert!selectKey")) {
 				key = ConnectionHold.READ;
 			} 
 			routeConnection(key, conn);
@@ -68,13 +68,6 @@ public class RWPlugin implements Interceptor {
 		if (!ConnectionHold.CONNECTION_CONTEXT.get().containsKey(key)) {
 			ConnectionProxy conToUse = (ConnectionProxy) conn;
 			conn = conToUse.getTargetConnection();
-			if (ConnectionHold.READ.equals(key)) {
-				try {
-					conn.setAutoCommit(true); 
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
 			ConnectionHold.CONNECTION_CONTEXT.get().put(key, conn);
 		}
 	}
