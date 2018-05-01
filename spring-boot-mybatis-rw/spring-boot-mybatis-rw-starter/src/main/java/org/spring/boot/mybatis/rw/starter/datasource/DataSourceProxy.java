@@ -182,6 +182,7 @@ public class DataSourceProxy implements DataSource {
 			// Invocation on ConnectionProxy interface coming in...
 			if (method.getName().equals("setTransactionIsolation") && args != null && (Integer) args[0] == Connection.TRANSACTION_SERIALIZABLE) {
 				 args[0] = defaultTransactionIsolation();
+				ConnectionHold.FORCE_WRITE.set(Boolean.TRUE);
 			}
 			if (method.getName().equals("equals")) {
 				// We must avoid fetching a target Connection for "equals".
