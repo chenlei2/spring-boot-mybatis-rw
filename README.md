@@ -6,7 +6,7 @@
 介绍
 ---
 此插件由以下2部分组成
-- datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法
+- datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法，默认实现org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout
 - pulgin：mybatis插件实现读写路由
 
 
@@ -35,8 +35,8 @@ XML配置
 - datasource：
 ```
 <!--简单的一个master和多个slaver 读写分离的数据源 -->
-	<bean id="dataSource" 
-	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWRoutingDataSourceProxy">
+	<bean id="roundRobinRWDataSourceRout"
+	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
 	    <property name="writeDataSource" ref="writeDS"/>
 	    <property name="readDataSoures">
 	        <list>
@@ -46,9 +46,12 @@ XML配置
 	        </list>
 	    </property>
 	</bean>
+	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy">
+		<constructor-arg ref="roundRobinRWDataSourceRout"/>
+	</bean>
 ``` 
 
 总结
 ---
-只需将数据源和事务工厂注入到sqlSessionFactory中，其他配置不变，便实现读写分离，对代码0入侵，配置简单，非常方便老项目的迁移。
+只需替换数据源，其他配置不变，便实现读写分离，对代码0入侵，配置简单，非常方便老项目的迁移。
 [详细配置](https://github.com/chenlei2/spring-boot-mybatis-rw/blob/master/spring-boot-mybatis-rw/mybatis-rw-sample-xml/src/main/resources/spring-mybatis.xml)
