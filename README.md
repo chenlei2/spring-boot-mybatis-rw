@@ -36,7 +36,7 @@ XML配置
 ```
 <!--简单的一个master和多个slaver 读写分离的数据源 -->
 	<bean id="roundRobinRWDataSourceRout"
-	    class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
+	    class="com.github.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
 	    <property name="writeDataSource" ref="writeDS"/>
 	    <property name="readDataSoures">
 	        <list>
@@ -46,7 +46,7 @@ XML配置
 	        </list>
 	    </property>
 	</bean>
-	<bean id="dataSource" class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.DataSourceProxy">
+	<bean id="dataSource" class="com.github.chenlei2.springboot.mybatis.rw.starter.datasource.DataSourceProxy">
 		<constructor-arg ref="roundRobinRWDataSourceRout"/>
 	</bean>
 ``` 
