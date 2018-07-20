@@ -6,7 +6,7 @@
 介绍
 ---
 此插件由以下2部分组成
-- datasource：读写数据源的代理，支持一写多读，用户只需实现 org.spring.boot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法，默认实现org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout
+- datasource：读写数据源的代理，支持一写多读，用户只需实现 pres.chenlei2.springboot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法，默认实现pres.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout
 - pulgin：mybatis插件实现读写路由
 
 
@@ -36,7 +36,7 @@ XML配置
 ```
 <!--简单的一个master和多个slaver 读写分离的数据源 -->
 	<bean id="roundRobinRWDataSourceRout"
-	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
+	    class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
 	    <property name="writeDataSource" ref="writeDS"/>
 	    <property name="readDataSoures">
 	        <list>
@@ -46,7 +46,7 @@ XML配置
 	        </list>
 	    </property>
 	</bean>
-	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy">
+	<bean id="dataSource" class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.DataSourceProxy">
 		<constructor-arg ref="roundRobinRWDataSourceRout"/>
 	</bean>
 ``` 
