@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="mybatis-rw-sample-xml" />
+        <module name="spring-boot-mybatis-rw-sample" />
+        <module name="spring-boot-mybatis-rw-starter" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
