@@ -4,9 +4,9 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>pres.chenlei2</groupId>
+        <groupId>com.github.chenlei2</groupId>
         <artifactId>spring-boot-mybatis-rw</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     <artifactId>mybatis-rw-sample-xml</artifactId>
     <packaging>war</packaging>
@@ -14,9 +14,9 @@
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
-            <groupId>pres.chenlei2</groupId>
+            <groupId>com.github.chenlei2</groupId>
             <artifactId>spring-boot-mybatis-rw-starter</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

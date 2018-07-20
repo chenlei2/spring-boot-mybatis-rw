@@ -4,7 +4,7 @@
 <configuration>
     
 	<plugins>
-		<plugin interceptor="pres.chenlei2.springboot.mybatis.rw.starter.pulgin.RWPlugin">
+		<plugin interceptor="com.github.chenlei2.springboot.mybatis.rw.starter.pulgin.RWPlugin">
 		</plugin>
 	</plugins>
 	 
