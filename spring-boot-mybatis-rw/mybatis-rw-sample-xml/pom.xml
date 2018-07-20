@@ -4,7 +4,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.chenlei.mybatis.rw</groupId>
+        <groupId>pres.chenlei2</groupId>
         <artifactId>spring-boot-mybatis-rw</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -14,7 +14,7 @@
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
-            <groupId>spring-boot-mybatis-rw-starter</groupId>
+            <groupId>pres.chenlei2</groupId>
             <artifactId>spring-boot-mybatis-rw-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>

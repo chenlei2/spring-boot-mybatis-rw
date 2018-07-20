@@ -32,7 +32,7 @@
 	
 	<!--简单的一个master和一个slaver 读写分离的数据源 -->
 	<bean id="roundRobinRWDataSourceRout"
-	    class="org.spring.boot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
+	    class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout">
 	    <property name="writeDataSource" ref="writeDS"/>
 	    <property name="readDataSoures">
 	        <list>
@@ -42,7 +42,7 @@
 	        </list>
 	    </property>
 	</bean>
-	<bean id="dataSource" class="org.spring.boot.mybatis.rw.starter.datasource.DataSourceProxy">
+	<bean id="dataSource" class="pres.chenlei2.springboot.mybatis.rw.starter.datasource.DataSourceProxy">
 		<constructor-arg ref="roundRobinRWDataSourceRout"/>
 	</bean>
 		<!-- mybatis配置 -->

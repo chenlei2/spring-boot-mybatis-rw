@@ -4,11 +4,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.chenlei.mybatis.rw</groupId>
+        <groupId>pres.chenlei2</groupId>
         <artifactId>spring-boot-mybatis-rw</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>spring-boot-mybatis-rw-sample</groupId>
+    <groupId>pres.chenlei2</groupId>
     <artifactId>spring-boot-mybatis-rw-sample</artifactId>
     <name>spring-boot-mybatis-rw-sample</name>
     <url>http://maven.apache.org</url>
@@ -22,7 +22,7 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>spring-boot-mybatis-rw-starter</groupId>
+            <groupId>pres.chenlei2</groupId>
             <artifactId>spring-boot-mybatis-rw-starter</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
