@@ -6,7 +6,7 @@
 介绍
 ---
 此插件由以下2部分组成
-- datasource：读写数据源的代理，支持一写多读，用户只需实现 pres.chenlei2.springboot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法，默认实现pres.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout
+- datasource：读写数据源的代理，支持一写多读，用户只需实现 com.github.chenlei2.springboot.mybatis.rw.starter.datasource.AbstractReadRoutingDataSource这个类，实现自己读数据源的负载均衡算法，默认实现com.github.chenlei2.springboot.mybatis.rw.starter.datasource.impl.RoundRobinRWDataSourceRout
 - pulgin：mybatis插件实现读写路由
 
 
