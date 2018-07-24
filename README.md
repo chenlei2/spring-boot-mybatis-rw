@@ -2,6 +2,15 @@
 基于mybatis，springboot开箱即用的读写分离插件
 
 # Quick Start
+Maven dependency
+---
+```
+<dependency>
+  <groupId>com.github.chenlei2</groupId>
+  <artifactId>spring-boot-mybatis-rw-starter</artifactId>
+  <version>0.0.1</version>
+</dependency>
+```
 
 介绍
 ---
