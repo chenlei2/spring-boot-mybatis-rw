@@ -8,8 +8,10 @@
         <outputRelativeToContentRoot value="true" />
         <module name="mybatis-rw-sample-xml" />
         <module name="spring-boot-mybatis-rw-sample" />
-        <module name="spring-boot-mybatis-rw-starter" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="spring-boot-mybatis-rw-starter" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
