@@ -6,6 +6,8 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import com.github.chenlei2.springboot.mybatis.rw.starter.datasource.ConnectionHold;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ibatis.executor.statement.RoutingStatementHandler;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.logging.jdbc.ConnectionLogger;
@@ -30,6 +32,8 @@ import org.springframework.jdbc.datasource.ConnectionProxy;
 @Intercepts({ @Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class}) })
 public class RWPlugin implements Interceptor {
 
+	public static final Log LOG = LogFactory.getLog(RWPlugin.class);
+
 	public Object intercept(Invocation invocation) throws Throwable {
 
 		Connection conn = (Connection) invocation.getArgs()[0];
@@ -37,6 +41,9 @@ public class RWPlugin implements Interceptor {
 		if (conn instanceof ConnectionProxy) {			
 			//强制走写库
 			if(ConnectionHold.FORCE_WRITE.get() != null && ConnectionHold.FORCE_WRITE.get()){
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("本事务强制走写库, 数据库url"+conn.getMetaData().getURL()+", 数据库name" + conn.getMetaData().getDatabaseProductName());
+				}
 				routeConnection(ConnectionHold.WRITE, conn);
 				return invocation.proceed();
 			}	
@@ -52,7 +59,14 @@ public class RWPlugin implements Interceptor {
 			String sel = statementHandler.getBoundSql().getSql().trim().substring(0,3);
 			if (sel.equalsIgnoreCase("sel") && !mappedStatement.getId().endsWith(".insert!selectKey")) {
 				key = ConnectionHold.READ;
-			} 
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("当前数据库为读库, 数据库url"+conn.getMetaData().getURL()+", 数据库name" + conn.getMetaData().getDatabaseProductName());
+				}
+			} else {
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("当前数据库为写库, 数据库url"+conn.getMetaData().getURL()+", 数据库name" + conn.getMetaData().getDatabaseProductName());
+				}
+			}
 			routeConnection(key, conn);
 		}
 
