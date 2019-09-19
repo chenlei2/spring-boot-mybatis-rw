@@ -1,7 +1,7 @@
 package com.github.chenlei2.springboot.mybatis.rw.starter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -79,7 +79,8 @@ public class MybatisAutoConfiguration {
 			Interceptor[] plugins = { rwplugin };
 			factory.setPlugins(plugins);
 		} else {
-			List<Interceptor> interceptorList = Arrays.asList(interceptors);
+			List<Interceptor> interceptorList = new ArrayList<Interceptor>(interceptors.length * 2);
+			Collections.addAll(interceptorList,interceptors);
 			interceptorList.add(rwplugin);
 			factory.setPlugins((Interceptor[]) interceptorList.toArray());
 		}
