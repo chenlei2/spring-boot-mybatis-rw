@@ -8,7 +8,7 @@ Maven dependency
 <dependency>
   <groupId>com.github.chenlei2</groupId>
   <artifactId>spring-boot-mybatis-rw-starter</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.2</version>
 </dependency>
 ```
 
