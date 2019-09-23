@@ -1,5 +1,6 @@
 package com.github.chenlei2.springboot.mybatis.rw.starter.datasource.impl;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
@@ -14,12 +15,10 @@ import com.github.chenlei2.springboot.mybatis.rw.starter.datasource.AbstractRWDa
  */
 public class RoundRobinRWDataSourceRout extends AbstractRWDataSourceRout {
 
-	private AtomicInteger count = new AtomicInteger(0);
-
 	@Override
 	protected DataSource loadBalance() {
-		int index = Math.abs(count.incrementAndGet()) % getReadDsSize();
-		return getResolvedReadDataSources().get(index);
+		Random random =  new Random();
+		return getResolvedReadDataSources().get(random.nextInt(getReadDsSize()));
 	}
 
 }

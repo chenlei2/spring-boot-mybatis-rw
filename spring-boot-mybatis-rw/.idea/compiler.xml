@@ -11,11 +11,5 @@
         <module name="spring-boot-mybatis-rw-starter" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="mybatis-rw-sample-xml" target="1.8.0_152-release" />
-      <module name="spring-boot-mybatis-rw" target="1.8.0_152-release" />
-      <module name="spring-boot-mybatis-rw-sample" target="1.8" />
-      <module name="spring-boot-mybatis-rw-starter" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
